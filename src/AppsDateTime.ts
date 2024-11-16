@@ -1,43 +1,3 @@
-/**
- * @typedef {object} AdtTimeOptions
- * @prop {number} [hours]
- * @prop {number} [minutes] 
- * @prop {number} [seconds]
- * @prop {number} [milliseconds] 
- */
-
-/**
- * @typedef {object} AdtTimeFlags
- * @prop {boolean} [hours]
- * @prop {boolean} [minutes] 
- * @prop {boolean} [seconds]
- * @prop {boolean} [milliseconds] 
- */
-
-/**
- * @typedef {object} AdtCreateOptions
- * @prop {number} [year]
- * @prop {number} [month]
- * @prop {number} [day]
- * @prop {number} [hours]
- * @prop {number} [minutes] 
- * @prop {number} [seconds]
- * @prop {number} [milliseconds] 
- * @prop {boolean} [utc]
- */
-
-/**
- * @typedef {object} AdtModifyOptions
- * @prop {number} [years] 
- * @prop {number} [months] 
- * @prop {number} [days]
- * @prop {number} [hours]
- * @prop {number} [minutes] 
- * @prop {number} [seconds]
- * @prop {number} [milliseconds]  
- * @prop {boolean} [utc]
- */
-
 class AppsDateTime {
 
   static adt() {
@@ -46,7 +6,7 @@ class AppsDateTime {
      * @param {Date} date - date
      * @param {AdtCreateOptions} [options]
      */
-    const apply = (date, options = {}) => {
+    const apply = (date: Date, options: AdtCreateOptions = {}) => {
       if (options.utc) {
         if (options.year !== undefined) date.setUTCFullYear(options.year);
         if (options.month !== undefined) date.setUTCMonth(options.month - 1);
@@ -74,7 +34,7 @@ class AppsDateTime {
      * @param {-1 | 1} sign - -1 | 1
      * @param {AdtModifyOptions} [options]
      */
-    const arithmetic = (date, sign, options = {}) => {
+    const arithmetic = (date: Date, sign: -1 | 1, options: AdtModifyOptions = {}) => {
 
       if (options.utc) {
         if (options.years !== undefined) date.setUTCFullYear(date.getUTCFullYear() + (sign * options.years));
@@ -97,15 +57,13 @@ class AppsDateTime {
       return date;
     };
 
-    /** @param {AdtCreateOptions} [options] */
-    const build = ({ year, month, day, hours, minutes, seconds, milliseconds } = {}) => {
+    const build = ({ year, month, day, hours, minutes, seconds, milliseconds }: AdtCreateOptions = {}) => {
       const date = new Date();
       apply(date, { year, month, day, hours, minutes, seconds, milliseconds });
       return date;
     };
 
-    /** @param {string} dtstr */
-    const fromString = (dtstr) => {
+    const fromString = (dtstr: string) => {
       const datePattern = /^\d+-\d{2}-\d{2}$/;
       const datetimePattern = /^\d+-\d{2}-\d{2}(T|\s)\d{2}:\d{2}:\d{2}(\.\d{3}Z?)?$/;
 
@@ -137,8 +95,7 @@ class AppsDateTime {
       return dt;
     };
 
-    /** @param {Date} dt  */
-    const toYearMonthDay = (dt) => {
+    const toYearMonthDay = (dt: Date) => {
       if (!dt || !(dt instanceof Date))
         return '';
 
@@ -149,38 +106,25 @@ class AppsDateTime {
       return `${year}-${month}-${day}`;
     };
 
-    /**
-     * @param {Date} dt - date
-     * @param {AdtCreateOptions} [options]
-     */
-    const update = (dt, { year, month, day, hours, minutes, seconds, milliseconds } = {}) => {
+    const update = (dt: Date, { year, month, day, hours, minutes, seconds, milliseconds }: AdtCreateOptions = {}) => {
       const date = new Date(dt);
       apply(date, { year, month, day, hours, minutes, seconds, milliseconds });
       return date;
     };
 
-    /**
-     * @param {Date} dt - date
-     * @param {AdtModifyOptions} [options]
-     */
-    const add = (dt, { years, months, days, hours, minutes, seconds, milliseconds } = {}) => {
+    const add = (dt: Date, { years, months, days, hours, minutes, seconds, milliseconds }: AdtModifyOptions = {}) => {
       const date = new Date(dt);
       arithmetic(date, 1, { years, months, days, hours, minutes, seconds, milliseconds });
       return date;
     };
 
-    /**
-     * @param {Date} dt - date
-     * @param {AdtModifyOptions} [options]
-     */
-    const subtract = (dt, { years, months, days, hours, minutes, seconds, milliseconds } = {}) => {
+    const subtract = (dt: Date, { years, months, days, hours, minutes, seconds, milliseconds }: AdtModifyOptions = {}) => {
       const date = new Date(dt);
       arithmetic(date, -1, { years, months, days, hours, minutes, seconds, milliseconds });
       return date;
     };
 
-    /** @param {Date[]} dts */
-    const min = (dts) => {
+    const min = (dts: Date[]) => {
       if (dts.length === 0)
         return null;
 
@@ -188,8 +132,7 @@ class AppsDateTime {
       return new Date(ms);
     };
 
-    /** @param {Date[]} dts */
-    const max = (dts) => {
+    const max = (dts: Date[]) => {
       if (dts.length === 0)
         return null;
 
@@ -197,12 +140,7 @@ class AppsDateTime {
       return new Date(ms);
     };
 
-    /**
-     * @param {Date} larger - Larger date
-     * @param {Date} smaller - Smaller date
-     * @param {AdtTimeFlags} [options]
-     */
-    const prettyDiff = (larger, smaller, { hours, minutes, seconds, milliseconds } = {}) => {
+    const prettyDiff = (larger: Date, smaller: Date, { hours, minutes, seconds, milliseconds }: AdtTimeFlags = {}) => {
       const yearDiff = larger.getFullYear() - smaller.getFullYear();
       const monthDiff = larger.getMonth() - smaller.getMonth();
       const dayDiff = larger.getDate() - smaller.getDate();
@@ -211,23 +149,23 @@ class AppsDateTime {
       const secondsDiff = larger.getSeconds() - smaller.getSeconds();
       const millisecondsDiff = larger.getMilliseconds() - smaller.getMilliseconds();
 
-      const allMonths = (yearDiff * 12) + monthDiff - (dayDiff < 0);
+      const allMonths = (yearDiff * 12) + monthDiff - +(dayDiff < 0);
       const totalYears = Math.floor(allMonths / 12);
       const totalMonths = allMonths % 12;
 
-      const adjustedDays = dayDiff - (hoursDiff < 0);
+      const adjustedDays = dayDiff - +(hoursDiff < 0);
       const totalDays = adjustedDays >= 0 ? adjustedDays : new Date(larger.getFullYear(), larger.getMonth() + 1, 0).getDate() + adjustedDays;
 
-      const adjustedHours = hoursDiff - (minutesDiff < 0);
+      const adjustedHours = hoursDiff - +(minutesDiff < 0);
       const totalHours = adjustedHours >= 0 ? adjustedHours : 24 + adjustedHours;
 
-      const adjustedMinutes = minutesDiff - (secondsDiff < 0);
+      const adjustedMinutes = minutesDiff - +(secondsDiff < 0);
       const totalMinutes = adjustedMinutes >= 0 ? adjustedMinutes : 60 + adjustedMinutes;
 
-      const adjustedSeconds = secondsDiff - (millisecondsDiff < 0);
+      const adjustedSeconds = secondsDiff - +(millisecondsDiff < 0);
       const totalSeconds = adjustedSeconds >= 0 ? adjustedSeconds : 60 + adjustedSeconds;
 
-      const totalMilliseconds = ((millisecondsDiff < 0) * 1000) + millisecondsDiff;
+      const totalMilliseconds = (+(millisecondsDiff < 0) * 1000) + millisecondsDiff;
 
       const showMilliseconds = !!milliseconds;
       const showSeconds = !!seconds || showMilliseconds;
@@ -259,11 +197,7 @@ class AppsDateTime {
       return parts.join(', ');
     };
 
-    /**
-     * @param {Date} one - date
-     * @param {Date} two - date
-     */
-    const diff = (one, two) => {
+    const diff = (one: Date, two: Date) => {
       const larger = one > two ? one : two;
       const smaller = one < two ? one : two;
 
@@ -284,7 +218,7 @@ class AppsDateTime {
       const months = totalMonths;
       const years = parseFloat((months / 12).toFixed(10));
 
-      const pretty = (/** @type {AdtTimeFlags} */ { hours, minutes, seconds, milliseconds } = {}) => prettyDiff(larger, smaller, { hours, minutes, seconds, milliseconds });
+      const pretty = ({ hours, minutes, seconds, milliseconds }: AdtTimeFlags = {}) => prettyDiff(larger, smaller, { hours, minutes, seconds, milliseconds });
 
       return { years, months, days, hours, minutes, seconds, milliseconds, pretty };
     };
@@ -298,7 +232,7 @@ class AppsDateTime {
      * @param {boolean} [options.includeStart] - inclusive for the start date
      * @param {boolean} [options.includeEnd] - inclusive for the end date
      */
-    const compare = (dt, start, end, { time = true, includeStart, includeEnd } = {}) => {
+    const compare = (dt: Date, start: Date, end: Date, { time = true, includeStart, includeEnd }: { time?: boolean, includeStart?: boolean, includeEnd?: boolean } = {}) => {
       const d = new Date(dt);
       const s = new Date(start);
       const e = new Date(end);
@@ -321,7 +255,7 @@ class AppsDateTime {
      * @param {object} [options] - optional options
      * @param {'year' | 'month' | 'day'} [options.cutoff] - when to cutoff to just the date vs the diff
      */
-    const interval = (to, { cutoff } = {}) => {
+    const interval = (to: Date, { cutoff }: { cutoff?: 'year' | 'month' | 'day' } = {}) => {
       const from = new Date();
       const isPast = from > to;
       const larger = isPast ? from : to;
@@ -372,7 +306,7 @@ class AppsDateTime {
      * @param {boolean} [options.includeStart] - inclusive for the start date
      * @param {boolean} [options.includeEnd] - inclusive for the end date
      */
-    const between = (dt, start, end, { time = true, includeStart, includeEnd } = {}) => {
+    const between = (dt: Date, start: Date, end: Date, { time = true, includeStart, includeEnd }: { time?: boolean, includeStart?: boolean, includeEnd?: boolean } = {}) => {
       const { gt, lt } = compare(dt, start, end, { time, includeStart, includeEnd });
       return gt && lt;
     };
@@ -386,7 +320,7 @@ class AppsDateTime {
      * @param {boolean} [options.includeStart] - inclusive for the start date
      * @param {boolean} [options.includeEnd] - inclusive for the end date
      */
-    const clamp = (dt, start, end, { time = true, includeStart, includeEnd } = {}) => {
+    const clamp = (dt: Date, start: Date, end: Date, { time = true, includeStart, includeEnd }: { time?: boolean, includeStart?: boolean, includeEnd?: boolean } = {}) => {
       const { gt, lt } = compare(dt, start, end, { time, includeStart, includeEnd });
       return (gt && lt) || (!gt && !lt) ? new Date(dt)
         : !gt ? new Date(start)
